@@ -1,0 +1,79 @@
+from pytube import *
+from tkinter import *
+from tkinter.filedialog import *
+from tkinter.messagebox import *
+#from threading import *
+file_size=0
+
+
+#def progress(stream=None, chunk=None, file_handle=None, remaining=None):
+    #file_downloded = (file_size - remaining)
+    #per = (file_downloded / file_size) * 100
+    #dBtn.config(text='{:00.0f} % downloaded'.format(per))
+
+
+def startDownload():
+    global file_size
+    try:
+        url= urlField.get()
+        print(url)
+        # changing button text
+        dBtn.config(text='Please wait...')
+        dBtn.config(state=DISABLED)
+        path_to_save_video = askdirectory()
+        print(path_to_save_video)
+        if path_to_save_video is None:
+            return
+        # creating youtube object with url...
+        ob = YouTube(url)
+        # strms=ob.streams.all()
+        # for s in strms:
+        #    print(s)
+
+        strm = ob.streams.first()
+        file_size=strm.filesize
+        print(file_size)
+        # print(strm)
+        # print(strm.filesize)
+        # print(strm.title)
+        # print(ob.description)
+        strm.download(path_to_save_video)
+        print('done...')
+        dBtn.config(text='Start Download')
+        dBtn.config(state=NORMAL)
+        showinfo('Download Finished','Downloaded Succesfully')
+        urlField.delete(0,END)
+
+    except Exception as e:
+        print(e)
+        print('error!!')
+
+#def startDownloadThread():
+#    thread=Thread(target=startDownload)
+#    thread.start()
+
+
+# starting gui building
+main=Tk()
+
+#setting the title
+main.title('Youtube Downloader')
+
+#set the icon
+main.iconbitmap('video.ico')
+
+main.geometry('500x600')
+
+file=PhotoImage(file='youtube2.png')
+headingIcon=Label(main,image=file)
+headingIcon.pack(side=TOP)
+urlField=Entry(main,font=('verdana',18),justify=CENTER)
+urlField.pack(side=TOP,fill=X,padx=10)
+
+dBtn=Button(main,text='start download',font=('verdana',18),relief='ridge',command=startDownload)
+
+dBtn.pack(side=TOP,pady=10)
+
+vTitle= Label(main,text='video title')
+vTitle.pack(side=TOP)
+main.mainloop()
